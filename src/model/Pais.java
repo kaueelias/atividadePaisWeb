@@ -11,21 +11,30 @@ public class Pais {
 	}
 	
 	public Pais(String nome, long populacao, double area) {
-
+		this.nome = nome;
+		this.populacao = populacao;
+		this.area = area;
 	}
 	
+	public Pais(int id, String nome, long populacao, double area) {
+		this.id = id;
+		this.nome = nome;
+		this.populacao = populacao;
+		this.area = area;
+	}
+
 	@Override
 	public String toString() {
 		return "Pais [idPais=" + id + ", nomePais=" + nome + ", populacaoPais=" + populacao + ", areaPais=" 
 				+ area + "]";
 	}
 
-	public static int getId() {
+	public int getId() {
 		return id;
 	}
 
-	public static void setId(int id) {
-
+	public void setId(int id) {
+		Pais.id = id;
 	}
 
 	public String getNome() {
@@ -50,11 +59,5 @@ public class Pais {
 
 	public void setArea(double area) {
 		this.area = area;
-	}
-	
-	public void setPopulacao(String pPopulacao) {
-	}
-
-	public void setArea(String pArea) {
 	}
 }

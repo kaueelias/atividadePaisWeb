@@ -11,6 +11,7 @@ import java.sql.Connection;
 
 public class PaisDAO {
 	public static int criar(String nome, long populacao, double area) {
+		int id = 0;
 		String sqlInsert = "INSERT INTO pais(nomePais, populacaoPais, areaPais) VALUES (?, ?, ?)";
 		// usando o try with resources do Java 7, que fecha o que abriu
 		try (Connection conn = ConnectionFactory.obtemConexao();
@@ -23,7 +24,8 @@ public class PaisDAO {
 			try (PreparedStatement stm2 = conn.prepareStatement(sqlQuery);
 					ResultSet rs = stm2.executeQuery();) {
 				if (rs.next()) {
-					Pais.setId(rs.getInt(1));
+					//pais.setId(rs.getInt(1));
+					id = rs.getInt(1);
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -31,7 +33,7 @@ public class PaisDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return Pais.getId();
+		return id;
 	}
 	public static void atualizar(int idPais, String nomePais, long populacaoPais, double areaPais) {
 		String sqlUpdate = "UPDATE pais SET nomePais=?, populacaoPais=?, areaPais=? WHERE idPais=?";
@@ -71,7 +73,7 @@ public class PaisDAO {
 					String nome = (rs.getString("nomePais"));
 					Long populacao = (rs.getLong("populacaoPais"));
 					Double area = (rs.getDouble("areaPais"));
-					pais = new Pais(nome, populacao, area);
+					pais = new Pais(idPais, nome, populacao, area);
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
