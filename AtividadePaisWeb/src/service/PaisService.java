@@ -2,35 +2,43 @@ package service;
 
 import java.util.ArrayList;
 
-import dao.PaisDAO;
-import model.Pais;
+import dao.*;
+import model.*;;
 
 public class PaisService {
 	PaisDAO dao = new PaisDAO();
-	
-	@SuppressWarnings({ "rawtypes" })
-	public ArrayList getPaisMaisHab() {
-		return PaisDAO.buscaPaisMaisHab();	
-	}
-	
-	@SuppressWarnings("rawtypes")
-	public ArrayList getPaisMenor() {
-		return PaisDAO.buscaPaisMenor();	
-	}
-	
+
+	@SuppressWarnings("static-access")
 	public int criar(Pais pais) {
-		return PaisDAO.criar(pais.getNome(), pais.getPopulacao(), pais.getArea());
+		return dao.criar(pais);
 	}
-	
+
 	public void atualizar(Pais pais){
-		PaisDAO.atualizar(0, null, 0, 0);
+		dao.atualizar(pais);
 	}
-	
+
 	public void excluir(int id){
-		PaisDAO.excluir(id);
+		dao.excluir(id);
 	}
-	
+
 	public Pais carregar(int id){
-		return PaisDAO.carregar(id);
+		return dao.carregar(id);
+	}
+
+	@SuppressWarnings({ "rawtypes", "static-access" })
+	public ArrayList maiorPopulacao() {
+		return dao.buscaMaiorPopulacao();
+	}
+
+	@SuppressWarnings({ "rawtypes", "static-access" })
+	public ArrayList menorArea() {
+		return dao.buscaMenorArea();
+	}
+
+	@SuppressWarnings("static-access")
+	public Pais[] vetor3() {
+		return dao.vetor3();
 	}
 }
+
+

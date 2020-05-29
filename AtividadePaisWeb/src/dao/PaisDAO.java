@@ -1,31 +1,30 @@
 package dao;
 
-import model.Pais;
-
-import java.sql.DriverManager;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.sql.Connection;
+
+import dao.ConnectionFactory;
+import model.Pais;
 
 public class PaisDAO {
-	public static int criar(String nome, long populacao, double area) {
-		int id = 0;
-		String sqlInsert = "INSERT INTO pais(nomePais, populacaoPais, areaPais) VALUES (?, ?, ?)";
+
+	public static int criar(Pais pais) {
+		String sqlInsert = "INSERT INTO país(nome, populacao, area) VALUES (?, ?, ?)";
 		// usando o try with resources do Java 7, que fecha o que abriu
 		try (Connection conn = ConnectionFactory.obtemConexao();
 				PreparedStatement stm = conn.prepareStatement(sqlInsert);) {
-			stm.setString(1, nome);
-			stm.setLong(2, populacao);
-			stm.setDouble(3, area);
+			stm.setString(1, pais.getNome());
+			stm.setLong(2, pais.getPopulacao());
+			stm.setDouble(3, pais.getArea());
 			stm.execute();
 			String sqlQuery = "SELECT LAST_INSERT_ID()";
 			try (PreparedStatement stm2 = conn.prepareStatement(sqlQuery);
 					ResultSet rs = stm2.executeQuery();) {
 				if (rs.next()) {
-					//pais.setId(rs.getInt(1));
-					id = rs.getInt(1);
+					pais.setId(rs.getInt(1));
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -33,47 +32,57 @@ public class PaisDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return id;
+		return pais.getId();
 	}
-	public static void atualizar(int idPais, String nomePais, long populacaoPais, double areaPais) {
-		String sqlUpdate = "UPDATE pais SET nomePais=?, populacaoPais=?, areaPais=? WHERE idPais=?";
-		// usando o try with resources do Java 7, quefecha o queabriu
+
+	public void atualizar(Pais pais) {
+		String sqlUpdate = "UPDATE país SET nome=?, populacao=?, area=? WHERE id=?";
+		// usando o try with resources do Java 7, que fecha o que abriu
 		try (Connection conn = ConnectionFactory.obtemConexao();
 				PreparedStatement stm = conn.prepareStatement(sqlUpdate);) {
-			stm.setString(1, nomePais);
-			stm.setLong(2, populacaoPais);
-			stm.setDouble(3, areaPais);
-			stm.setInt(4, idPais);
+			stm.setString(1, pais.getNome());
+			stm.setLong(2, pais.getPopulacao());
+			stm.setDouble(3, pais.getArea());
+			stm.setInt(4, pais.getId());
 			stm.execute();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	public static void excluir(int idPais) {
-		String sqlDelete = "DELETE FROM pais WHERE idPais = ?";
-		// usando o try with resources do Java 7, quefecha o queabriu
+
+
+	public void excluir(int id) {
+		String sqlDelete = "DELETE FROM país WHERE id = ?";
+		// usando o try with resources do Java 7, que fecha o que abriu
 		try (Connection conn = ConnectionFactory.obtemConexao();
 				PreparedStatement stm = conn.prepareStatement(sqlDelete);) {
-			stm.setInt(1, idPais);
+			stm.setInt(1, id);
 			stm.execute();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public static Pais carregar(int idPais) {
-		Pais pais = null;
-		String sqlSelect = "SELECT nomePais, populacaoPais, areaPais FROM pais WHERE idPais = ?";
-		// usando o try with resources do Java 7, quefecha o queabriu
+
+
+
+	public Pais carregar(int id) {
+		Pais pais = new Pais();
+		pais.setId(id);
+		String sqlSelect = "SELECT nome, populacao, area FROM país WHERE país.id = ?";
+		// usando o try with resources do Java 7, que fecha o que abriu
 		try (Connection conn = ConnectionFactory.obtemConexao();
 				PreparedStatement stm = conn.prepareStatement(sqlSelect);) {
-			stm.setInt(1, idPais);
+			stm.setInt(1, pais.getId());
 			try (ResultSet rs = stm.executeQuery();) {
 				if (rs.next()) {
-					String nome = (rs.getString("nomePais"));
-					Long populacao = (rs.getLong("populacaoPais"));
-					Double area = (rs.getDouble("areaPais"));
-					pais = new Pais(idPais, nome, populacao, area);
+					pais.setNome(rs.getString("nome"));
+					pais.setPopulacao(rs.getLong("populacao"));
+					pais.setArea(rs.getDouble("area"));
+				} else {
+					pais.setId(-1);
+					pais.setNome(null);
+					pais.setPopulacao(0);
+					pais.setArea(0);
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -84,17 +93,20 @@ public class PaisDAO {
 		return pais;
 	}
 
+
+
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static ArrayList buscaPaisMaisHab() {
-		ArrayList buscaHabi = new ArrayList();
-		String sqlSelect = "select * from pais order by populacaoPais desc limit 1";
+	public static ArrayList buscaMaiorPopulacao() {
+		ArrayList maiorPopulacao = new ArrayList();
+		String sqlSelect = "SELECT * FROM país ORDER BY populacao DESC LIMIT 1";
 		try (Connection conn = ConnectionFactory.obtemConexao();
 				PreparedStatement stm = conn.prepareStatement(sqlSelect);) {
 			try (ResultSet rs = stm.executeQuery();) {
 				if (rs.next()) {
-					buscaHabi.add(rs.getString("nomePais"));
-					buscaHabi.add(rs.getString("populacaoPais"));
-					buscaHabi.add(rs.getString("areaPais"));
+					maiorPopulacao.add(rs.getString("nome"));
+					maiorPopulacao.add(rs.getString("populacao"));
+					maiorPopulacao.add(rs.getString("area"));
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -102,44 +114,45 @@ public class PaisDAO {
 		} catch (SQLException e1) {
 			System.out.print(e1.getStackTrace());
 		}
-		return buscaHabi;
-	}
-	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static ArrayList buscaPaisMenor() {
-		ArrayList buscaArea = new ArrayList();
-		String sqlSelect = "select * from pais order by areaPais asc limit 1";
-		try (Connection conn = ConnectionFactory.obtemConexao();
-				PreparedStatement stm = conn.prepareStatement(sqlSelect);) {
-			try (ResultSet rs = stm.executeQuery();) {
-				if (rs.next()) {
-					buscaArea.add(rs.getString("nomePais"));
-					buscaArea.add(rs.getString("populacaoPais"));
-					buscaArea.add(rs.getString("areaPais"));
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		} catch (SQLException e1) {
-			System.out.print(e1.getStackTrace());
-		}
-		return buscaArea;
+		return maiorPopulacao;
 	}
 
-	public static Pais[] Vetor() {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static ArrayList buscaMenorArea() {
+		ArrayList menorArea = new ArrayList();
+		String sqlSelect = "SELECT * FROM país ORDER BY area ASC LIMIT 1";
+		try (Connection conn = ConnectionFactory.obtemConexao();
+				PreparedStatement stm = conn.prepareStatement(sqlSelect);) {
+			try (ResultSet rs = stm.executeQuery();) {
+				if (rs.next()) {
+					menorArea.add(rs.getString("nome"));
+					menorArea.add(rs.getString("populacao"));
+					menorArea.add(rs.getString("area"));
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		} catch (SQLException e1) {
+			System.out.print(e1.getStackTrace());
+		}
+		return menorArea;
+	}
+
+	public static Pais[] vetor3() {
 		Pais pais = null;
 		Pais[] vetor = new Pais[3];
 		int count = 0;
-		String sqlSelect = "SELECT idPais, nomePais, populacaoPais, areaPais FROM pais limit 3";
+		String sqlSelect = "SELECT id, nome, populacao, area FROM país limit 3";
 		// usando o try with resources do Java 7, quefecha o queabriu
 		try (Connection conn = ConnectionFactory.obtemConexao();
 				PreparedStatement stm = conn.prepareStatement(sqlSelect);) {
 			try (ResultSet rs = stm.executeQuery();) {
 				while (rs.next()) {
-					String nome = rs.getString("nomePais");
-					Long populacao = rs.getLong("populacaoPais");
-					Double area = rs.getDouble("areaPais");
-					pais = new Pais(nome, populacao, area);
+					Integer id = rs.getInt("id");
+					String nome = rs.getString("nome");
+					Long populacao = rs.getLong("populacao");
+					Double area = rs.getDouble("area");
+					pais = new Pais(id, nome, populacao, area);
 					vetor[count++] = pais;
 				}
 			} catch (SQLException e) {
@@ -150,4 +163,62 @@ public class PaisDAO {
 		}
 		return vetor;
 	}
+	
+	public ArrayList<Pais> listarPaises() {
+		Pais pais;
+		ArrayList<Pais> lista = new ArrayList<>();
+		String sqlSelect = "SELECT id, nome, populacao, area FROM país";
+		// usando o try with resources do Java 7, que fecha o que abriu
+		try (Connection conn = ConnectionFactory.obtemConexao();
+				PreparedStatement stm = conn.prepareStatement(sqlSelect);) {
+			try (ResultSet rs = stm.executeQuery();) {
+				while (rs.next()) {
+					pais = new Pais();
+					pais.setId(rs.getInt("id"));
+					pais.setNome(rs.getString("nome"));
+					pais.setPopulacao(rs.getLong("populacao"));
+					pais.setArea(rs.getDouble("area"));
+					lista.add(pais);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		} catch (SQLException e1) {
+			System.out.print(e1.getStackTrace());
+		}
+		return lista;
+	}
+
+	public ArrayList<Pais> listarPaises(String chave) {
+		Pais pais;
+		ArrayList<Pais> lista = new ArrayList<>();
+		String sqlSelect = "SELECT id, nome, populacao, area FROM país where upper(nome) like ?";
+		// usando o try with resources do Java 7, que fecha o que abriu
+		try (Connection conn = ConnectionFactory.obtemConexao();
+				PreparedStatement stm = conn.prepareStatement(sqlSelect);) {
+			stm.setString(1, "%" + chave.toUpperCase() + "%");
+			try (ResultSet rs = stm.executeQuery();) {
+				while (rs.next()) {
+					pais = new Pais();
+					pais.setId(rs.getInt("id"));
+					pais.setNome(rs.getString("nome"));
+					pais.setPopulacao(rs.getLong("populacao"));
+					pais.setArea(rs.getDouble("area"));
+					lista.add(pais);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		} catch (SQLException e1) {
+			System.out.print(e1.getStackTrace());
+		}
+		return lista;
+	}
+
+
 }
+
+
+
+
+
