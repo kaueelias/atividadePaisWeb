@@ -12,8 +12,7 @@ import service.PaisService;
 public class VisualizarPais implements Command {
 
 	@Override
-	public void executar(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	public void executar(HttpServletRequest request,HttpServletResponse response) throws ServletException, IOException {
 		String pId = request.getParameter("id");
 		String pNome = request.getParameter("nome");
 		String pPopulacao = request.getParameter("populacao");

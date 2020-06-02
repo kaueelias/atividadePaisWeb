@@ -11,13 +11,11 @@ import javax.servlet.http.HttpSession;
 public class ListarPaisReiniciar implements Command {
 
 	@Override
-	public void executar(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	public void executar(HttpServletRequest request,HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		session.setAttribute("lista", null);
 
-		RequestDispatcher dispatcher = request
-				.getRequestDispatcher("ListarPaises.jsp");
+		RequestDispatcher dispatcher = request.getRequestDispatcher("ListarPaises.jsp");
 		dispatcher.forward(request, response);
 	}
 }

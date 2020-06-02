@@ -15,8 +15,7 @@ import service.VendedorService;
 public class ListarPaisBuscar implements Command {
 
 	@Override
-	public void executar(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	public void executar(HttpServletRequest request,HttpServletResponse response) throws ServletException, IOException {
 		String chave = request.getParameter("data[search]");
 		VendedorService vendedor = new VendedorService();
 		ArrayList<Pais> lista = null;
@@ -28,8 +27,7 @@ public class ListarPaisBuscar implements Command {
 		}
 		session.setAttribute("lista", lista);
 
-		RequestDispatcher dispatcher = request
-				.getRequestDispatcher("ListarPaises.jsp");
+		RequestDispatcher dispatcher = request.getRequestDispatcher("ListarPaises.jsp");
 		dispatcher.forward(request, response);
 	}
 }

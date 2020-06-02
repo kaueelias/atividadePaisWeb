@@ -13,8 +13,7 @@ import service.PaisService;
 public class AlterarPais implements Command {
 
 	@Override
-	public void executar(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	public void executar(HttpServletRequest request,HttpServletResponse response) throws ServletException, IOException {
 		String pId = request.getParameter("id");
 		String pNome = request.getParameter("nome");
 		Long pPopulacao = Long.parseLong(request.getParameter("populacao"));

@@ -21,7 +21,7 @@ public class ConnectionFactory {
 	public static Connection obtemConexao() throws SQLException {
 		if (conn.get() == null){
 			conn.set(DriverManager
-					.getConnection("jdbc:mysql://localhost:3306/mundo?useTimezone=true&serverTimezone=America/Sao_Paulo&user=root&password=7849516230Ee"));
+					.getConnection("jdbc:mysql://localhost:3306/mundo?useTimezone=true&serverTimezone=America/Sao_Paulo&user=root&password=1234"));
 		}
 		return conn.get();
 	}

@@ -33,7 +33,7 @@ public class LogFilter implements Filter {
 		Usuario usuario = (Usuario)session.getAttribute("logado");
 		
 		logRequest = new FileWriter(new File("C:\\Users\\KaueElias\\Desktop/logreqPaisLogin.log"), true);
-		logRequest.append("^^^^^^^^^^^^^^^^^^^^^^^^ \n");
+		logRequest.append("~~~~~~~~~~~~~~~~~~~~~~ \n");
 		
 		if(usuario == null){
 	    	//System.out.println(req.getParameter("command"));
@@ -53,7 +53,7 @@ public class LogFilter implements Filter {
 			logRequest.append("Situação do login: " + usuario.getUsername() + " ->" + req.getParameter("command") + "\n");
 
 		}
-		logRequest.append("^^^^^^^^^^^^^^^^^^^^^^^^ \n");
+		logRequest.append("~~~~~~~~~~~~~~~~~~~~~~ \n");
 		logRequest.flush();
 	}
 
